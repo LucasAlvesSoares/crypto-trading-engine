@@ -174,4 +174,3 @@ func StdDev(prices []decimal.Decimal, period int) float64 {
 	variance = variance / float64(period)
 	return math.Sqrt(variance)
 }
-

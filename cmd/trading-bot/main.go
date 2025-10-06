@@ -252,11 +252,11 @@ func getOrCreateStrategy(db *sql.DB, cfg *config.Config, lgr *logrus.Logger) (uu
 		// Create new strategy
 		strategyID = uuid.New()
 		configJSON, _ := json.Marshal(map[string]interface{}{
-			"sma_period":    20,
-			"rsi_period":    14,
-			"bb_period":     20,
-			"bb_std_dev":    2.0,
-			"rsi_oversold":  30.0,
+			"sma_period":     20,
+			"rsi_period":     14,
+			"bb_period":      20,
+			"bb_std_dev":     2.0,
+			"rsi_oversold":   30.0,
 			"rsi_overbought": 70.0,
 		})
 
@@ -311,4 +311,3 @@ func initializePaperBalance(db *sql.DB, cfg *config.Config, lgr *logrus.Logger) 
 		lgr.Info("Paper trading balance initialized: $10,000 USD")
 	}
 }
-

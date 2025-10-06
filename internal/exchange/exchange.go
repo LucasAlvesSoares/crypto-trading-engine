@@ -99,4 +99,3 @@ type Candle struct {
 	Close  decimal.Decimal
 	Volume decimal.Decimal
 }
-

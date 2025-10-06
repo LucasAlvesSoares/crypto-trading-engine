@@ -16,24 +16,24 @@ import (
 
 // MeanReversionStrategy implements a mean reversion trading strategy
 type MeanReversionStrategy struct {
-	strategyID      uuid.UUID
-	symbol          string
-	db              *sql.DB
-	nats            *events.NATSClient
-	logger          *logrus.Entry
-	config          *config.Config
-	
+	strategyID uuid.UUID
+	symbol     string
+	db         *sql.DB
+	nats       *events.NATSClient
+	logger     *logrus.Entry
+	config     *config.Config
+
 	// Strategy parameters
-	smaPeriod       int
-	rsiPeriod       int
-	bbPeriod        int
-	bbStdDev        float64
-	rsiOversold     float64
-	rsiOverbought   float64
-	
+	smaPeriod     int
+	rsiPeriod     int
+	bbPeriod      int
+	bbStdDev      float64
+	rsiOversold   float64
+	rsiOverbought float64
+
 	// Price history
-	priceHistory    []decimal.Decimal
-	maxHistorySize  int
+	priceHistory   []decimal.Decimal
+	maxHistorySize int
 }
 
 // NewMeanReversionStrategy creates a new mean reversion strategy
@@ -72,7 +72,7 @@ func (mrs *MeanReversionStrategy) OnPriceUpdate(ctx context.Context, update *eve
 	// Add price to history
 	price := decimal.NewFromFloat(update.Price)
 	mrs.priceHistory = append(mrs.priceHistory, price)
-	
+
 	// Keep history size manageable
 	if len(mrs.priceHistory) > mrs.maxHistorySize {
 		mrs.priceHistory = mrs.priceHistory[1:]
@@ -87,7 +87,7 @@ func (mrs *MeanReversionStrategy) OnPriceUpdate(ctx context.Context, update *eve
 	// Calculate indicators
 	sma := SMA(mrs.priceHistory, mrs.smaPeriod)
 	rsi := RSI(mrs.priceHistory, mrs.rsiPeriod)
-	upperBB, middleBB, lowerBB := BollingerBands(mrs.priceHistory, mrs.bbPeriod, mrs.bbStdDev)
+	upperBB, _, lowerBB := BollingerBands(mrs.priceHistory, mrs.bbPeriod, mrs.bbStdDev)
 
 	currentPrice := mrs.priceHistory[len(mrs.priceHistory)-1]
 
@@ -187,13 +187,13 @@ func (mrs *MeanReversionStrategy) generateLongSignal(
 	}
 
 	mrs.logger.WithFields(logrus.Fields{
-		"signal_id":      signal.ID,
-		"side":           signal.Side,
-		"quantity":       quantity.String(),
-		"stop_loss":      stopLossPrice.String(),
-		"rsi":            rsi,
-		"price":          currentPrice.String(),
-		"lower_bb":       lowerBB.String(),
+		"signal_id": signal.ID,
+		"side":      signal.Side,
+		"quantity":  quantity.String(),
+		"stop_loss": stopLossPrice.String(),
+		"rsi":       rsi,
+		"price":     currentPrice.String(),
+		"lower_bb":  lowerBB.String(),
 	}).Info("LONG signal generated")
 
 	return nil
@@ -297,11 +297,11 @@ func (mrs *MeanReversionStrategy) generateExitSignal(
 	}
 
 	mrs.logger.WithFields(logrus.Fields{
-		"signal_id":     signal.ID,
-		"trade_id":      trade.ID,
-		"exit_side":     signal.Side,
-		"quantity":      signal.Quantity.String(),
-		"reason":        reason,
+		"signal_id": signal.ID,
+		"trade_id":  trade.ID,
+		"exit_side": signal.Side,
+		"quantity":  signal.Quantity.String(),
+		"reason":    reason,
 	}).Info("EXIT signal generated")
 
 	return nil
@@ -314,7 +314,7 @@ func (mrs *MeanReversionStrategy) hasOpenPosition(ctx context.Context) (bool, er
 		SELECT COUNT(*) FROM trades 
 		WHERE strategy_id = $1 AND exit_time IS NULL
 	`, mrs.strategyID).Scan(&count)
-	
+
 	if err != nil {
 		return false, err
 	}
@@ -330,7 +330,7 @@ func (mrs *MeanReversionStrategy) LoadPriceHistory(ctx context.Context, limit in
 		ORDER BY time DESC
 		LIMIT $2
 	`, mrs.symbol, limit)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to load price history: %w", err)
 	}
@@ -360,4 +360,3 @@ func (mrs *MeanReversionStrategy) LoadPriceHistory(ctx context.Context, limit in
 
 	return nil
 }
-

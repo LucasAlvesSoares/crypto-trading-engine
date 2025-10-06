@@ -33,10 +33,10 @@ type NATSConfig struct {
 
 // CoinbaseConfig holds Coinbase API configuration
 type CoinbaseConfig struct {
-	APIKey       string
-	APISecret    string
+	APIKey        string
+	APISecret     string
 	APIPassphrase string
-	UseSandbox   bool
+	UseSandbox    bool
 }
 
 // TradingConfig holds trading mode configuration
@@ -46,12 +46,12 @@ type TradingConfig struct {
 
 // RiskConfig holds risk management parameters
 type RiskConfig struct {
-	MaxPositionSizeUSD     float64
-	MaxOpenPositions       int
-	DailyLossLimitPercent  float64
-	StopLossPercent        float64
-	MaxHoldTimeHours       int
-	MinBalanceUSD          float64
+	MaxPositionSizeUSD    float64
+	MaxOpenPositions      int
+	DailyLossLimitPercent float64
+	StopLossPercent       float64
+	MaxHoldTimeHours      int
+	MinBalanceUSD         float64
 }
 
 // StrategyConfig holds strategy configuration
@@ -86,21 +86,21 @@ func Load() (*Config, error) {
 			URL: getEnv("NATS_URL", "nats://localhost:4222"),
 		},
 		Coinbase: CoinbaseConfig{
-			APIKey:       getEnv("COINBASE_API_KEY", ""),
-			APISecret:    getEnv("COINBASE_API_SECRET", ""),
+			APIKey:        getEnv("COINBASE_API_KEY", ""),
+			APISecret:     getEnv("COINBASE_API_SECRET", ""),
 			APIPassphrase: getEnv("COINBASE_API_PASSPHRASE", ""),
-			UseSandbox:   getEnvBool("COINBASE_USE_SANDBOX", true),
+			UseSandbox:    getEnvBool("COINBASE_USE_SANDBOX", true),
 		},
 		Trading: TradingConfig{
 			Mode: getEnv("TRADING_MODE", "paper"),
 		},
 		Risk: RiskConfig{
-			MaxPositionSizeUSD:     getEnvFloat("RISK_MAX_POSITION_SIZE_USD", 100.0),
-			MaxOpenPositions:       getEnvInt("RISK_MAX_OPEN_POSITIONS", 1),
-			DailyLossLimitPercent:  getEnvFloat("RISK_DAILY_LOSS_LIMIT_PERCENT", 2.0),
-			StopLossPercent:        getEnvFloat("RISK_STOP_LOSS_PERCENT", 2.0),
-			MaxHoldTimeHours:       getEnvInt("RISK_MAX_HOLD_TIME_HOURS", 24),
-			MinBalanceUSD:          getEnvFloat("RISK_MIN_BALANCE_USD", 50.0),
+			MaxPositionSizeUSD:    getEnvFloat("RISK_MAX_POSITION_SIZE_USD", 100.0),
+			MaxOpenPositions:      getEnvInt("RISK_MAX_OPEN_POSITIONS", 1),
+			DailyLossLimitPercent: getEnvFloat("RISK_DAILY_LOSS_LIMIT_PERCENT", 2.0),
+			StopLossPercent:       getEnvFloat("RISK_STOP_LOSS_PERCENT", 2.0),
+			MaxHoldTimeHours:      getEnvInt("RISK_MAX_HOLD_TIME_HOURS", 24),
+			MinBalanceUSD:         getEnvFloat("RISK_MIN_BALANCE_USD", 50.0),
 		},
 		Strategy: StrategyConfig{
 			Enabled:   getEnvBool("STRATEGY_ENABLED", false),
@@ -209,4 +209,3 @@ func getEnvFloat(key string, defaultValue float64) float64 {
 	}
 	return floatValue
 }
-

@@ -46,12 +46,12 @@ const (
 type ExitReason string
 
 const (
-	ExitReasonStopLoss    ExitReason = "STOP_LOSS"
-	ExitReasonTakeProfit  ExitReason = "TAKE_PROFIT"
-	ExitReasonTimeout     ExitReason = "TIMEOUT"
-	ExitReasonManual      ExitReason = "MANUAL"
-	ExitReasonSignal      ExitReason = "SIGNAL"
-	ExitReasonKillSwitch  ExitReason = "KILL_SWITCH"
+	ExitReasonStopLoss   ExitReason = "STOP_LOSS"
+	ExitReasonTakeProfit ExitReason = "TAKE_PROFIT"
+	ExitReasonTimeout    ExitReason = "TIMEOUT"
+	ExitReasonManual     ExitReason = "MANUAL"
+	ExitReasonSignal     ExitReason = "SIGNAL"
+	ExitReasonKillSwitch ExitReason = "KILL_SWITCH"
 )
 
 // Order represents a trading order
@@ -78,24 +78,24 @@ type Order struct {
 
 // Trade represents a completed or open trading position
 type Trade struct {
-	ID            uuid.UUID
-	EntryOrderID  uuid.UUID
-	ExitOrderID   *uuid.UUID
-	StrategyID    uuid.UUID
-	Symbol        string
-	EntryPrice    decimal.Decimal
-	ExitPrice     decimal.NullDecimal
-	Quantity      decimal.Decimal
-	Side          TradeSide
-	EntryTime     time.Time
-	ExitTime      *time.Time
-	PnL           decimal.NullDecimal
-	PnLPercent    decimal.NullDecimal
-	FeesTotal     decimal.Decimal
-	HoldDuration  *time.Duration
-	ExitReason    *ExitReason
-	Metadata      map[string]interface{}
-	CreatedAt     time.Time
+	ID           uuid.UUID
+	EntryOrderID uuid.UUID
+	ExitOrderID  *uuid.UUID
+	StrategyID   uuid.UUID
+	Symbol       string
+	EntryPrice   decimal.Decimal
+	ExitPrice    decimal.NullDecimal
+	Quantity     decimal.Decimal
+	Side         TradeSide
+	EntryTime    time.Time
+	ExitTime     *time.Time
+	PnL          decimal.NullDecimal
+	PnLPercent   decimal.NullDecimal
+	FeesTotal    decimal.Decimal
+	HoldDuration *time.Duration
+	ExitReason   *ExitReason
+	Metadata     map[string]interface{}
+	CreatedAt    time.Time
 }
 
 // IsOpen returns true if the trade is still open
@@ -186,17 +186,17 @@ type PerformanceSnapshot struct {
 
 // TradeStats represents aggregated statistics for trades
 type TradeStats struct {
-	TotalTrades     int
-	ClosedTrades    int
-	WinningTrades   int
-	LosingTrades    int
-	TotalPnL        decimal.Decimal
-	AveragePnL      decimal.Decimal
-	MaxProfit       decimal.Decimal
-	MaxLoss         decimal.Decimal
+	TotalTrades      int
+	ClosedTrades     int
+	WinningTrades    int
+	LosingTrades     int
+	TotalPnL         decimal.Decimal
+	AveragePnL       decimal.Decimal
+	MaxProfit        decimal.Decimal
+	MaxLoss          decimal.Decimal
 	AvgReturnPercent decimal.Decimal
-	TotalFees       decimal.Decimal
-	WinRate         float64
+	TotalFees        decimal.Decimal
+	WinRate          float64
 }
 
 // CalculateWinRate calculates the win rate
@@ -213,4 +213,3 @@ type KillSwitchStatus struct {
 	Reason    *string    `json:"reason"`
 	Timestamp *time.Time `json:"timestamp"`
 }
-

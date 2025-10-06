@@ -39,4 +39,3 @@ func NewLogger(level, format string) *logrus.Logger {
 func WithComponent(logger *logrus.Logger, component string) *logrus.Entry {
 	return logger.WithField("component", component)
 }
-

@@ -3,7 +3,6 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"net/http"
 	"time"
 
 	"github.com/crypto-trading-bot/internal/config"
@@ -60,7 +59,7 @@ func main() {
 	// Health check
 	router.GET("/health", func(c *gin.Context) {
 		c.JSON(200, gin.H{
-			"status": "healthy",
+			"status":    "healthy",
 			"timestamp": time.Now(),
 		})
 	})
@@ -167,7 +166,7 @@ func main() {
 	// Start server
 	port := ":" + cfg.API.Port
 	lgr.WithField("port", port).Info("API Gateway started")
-	
+
 	if err := router.Run(port); err != nil {
 		lgr.Fatalf("Failed to start server: %v", err)
 	}
@@ -506,4 +505,3 @@ func getLogs(db *sql.DB, lgr *logrus.Logger) []map[string]interface{} {
 
 	return logs
 }
-

@@ -45,7 +45,7 @@ type CoinbaseExchange struct {
 func NewCoinbaseExchange(apiKey, apiSecret, passphrase string, sandbox bool, logger *logrus.Logger) *CoinbaseExchange {
 	baseURL := coinbaseAPIURL
 	wsURL := coinbaseWSURL
-	
+
 	if sandbox {
 		baseURL = coinbaseSandboxAPIURL
 		wsURL = coinbaseSandboxWSURL
@@ -156,7 +156,7 @@ func (ce *CoinbaseExchange) CancelOrder(ctx context.Context, orderID string) err
 // GetOrder gets an order by ID
 func (ce *CoinbaseExchange) GetOrder(ctx context.Context, orderID string) (*OrderResponse, error) {
 	endpoint := fmt.Sprintf("/orders/%s", orderID)
-	
+
 	var response map[string]interface{}
 	if err := ce.makeRequest(ctx, "GET", endpoint, nil, &response); err != nil {
 		return nil, fmt.Errorf("failed to get order: %w", err)
@@ -183,10 +183,10 @@ func (ce *CoinbaseExchange) GetBalance(ctx context.Context) (map[string]*Balance
 	balances := make(map[string]*Balance)
 	for _, acc := range accounts {
 		currency := acc["currency"].(string)
-		
+
 		available, _ := decimal.NewFromString(acc["available"].(string))
 		hold, _ := decimal.NewFromString(acc["hold"].(string))
-		
+
 		balances[currency] = &Balance{
 			Currency:  currency,
 			Available: available,
@@ -201,7 +201,7 @@ func (ce *CoinbaseExchange) GetBalance(ctx context.Context) (map[string]*Balance
 // GetPrice gets the current price for a symbol
 func (ce *CoinbaseExchange) GetPrice(ctx context.Context, symbol string) (decimal.Decimal, error) {
 	endpoint := fmt.Sprintf("/products/%s/ticker", symbol)
-	
+
 	var response map[string]interface{}
 	if err := ce.makeRequest(ctx, "GET", endpoint, nil, &response); err != nil {
 		return decimal.Zero, fmt.Errorf("failed to get price: %w", err)
@@ -360,7 +360,7 @@ func (ce *CoinbaseExchange) listenWebSocket(ctx context.Context) {
 func (ce *CoinbaseExchange) processTicker(msg map[string]interface{}) {
 	symbol := msg["product_id"].(string)
 	priceStr := msg["price"].(string)
-	
+
 	price, err := decimal.NewFromString(priceStr)
 	if err != nil {
 		ce.logger.WithError(err).Error("Failed to parse price")
@@ -384,4 +384,3 @@ func (ce *CoinbaseExchange) processTicker(msg map[string]interface{}) {
 		go callback(update)
 	}
 }
-

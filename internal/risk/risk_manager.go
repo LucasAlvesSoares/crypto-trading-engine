@@ -67,7 +67,7 @@ func (rm *RiskManager) ValidateTradeSignal(ctx context.Context, signal *models.T
 	// Validate position size
 	positionValue := signal.Quantity.Mul(decimal.NewFromFloat(signal.Indicators["price"]))
 	if positionValue.GreaterThan(decimal.NewFromFloat(rm.config.MaxPositionSizeUSD)) {
-		err := fmt.Errorf("position size %.2f exceeds limit %.2f", 
+		err := fmt.Errorf("position size %.2f exceeds limit %.2f",
 			positionValue.InexactFloat64(), rm.config.MaxPositionSizeUSD)
 		rm.logRiskEvent(ctx, signal.StrategyID, "POSITION_SIZE", err.Error(), "Trade rejected")
 		return err
@@ -84,9 +84,9 @@ func (rm *RiskManager) ValidateTradeSignal(ctx context.Context, signal *models.T
 	entryPrice := decimal.NewFromFloat(signal.Indicators["price"])
 	stopLossDiff := entryPrice.Sub(signal.StopLossPrice).Abs()
 	stopLossPercent := stopLossDiff.Div(entryPrice).Mul(decimal.NewFromInt(100))
-	
+
 	if stopLossPercent.GreaterThan(decimal.NewFromFloat(rm.config.StopLossPercent * 2)) {
-		err := fmt.Errorf("stop-loss %.2f%% is too wide (max %.2f%%)", 
+		err := fmt.Errorf("stop-loss %.2f%% is too wide (max %.2f%%)",
 			stopLossPercent.InexactFloat64(), rm.config.StopLossPercent*2)
 		rm.logRiskEvent(ctx, signal.StrategyID, "STOP_LOSS_TOO_WIDE", err.Error(), "Trade rejected")
 		return err
@@ -118,7 +118,7 @@ func (rm *RiskManager) CheckOpenTrades(ctx context.Context) error {
 	for rows.Next() {
 		var trade models.Trade
 		var metadataJSON []byte
-		
+
 		err := rows.Scan(
 			&trade.ID,
 			&trade.StrategyID,
@@ -146,7 +146,7 @@ func (rm *RiskManager) CheckOpenTrades(ctx context.Context) error {
 		// Check max hold time
 		holdDuration := time.Since(trade.EntryTime)
 		maxHoldDuration := time.Duration(rm.config.MaxHoldTimeHours) * time.Hour
-		
+
 		if holdDuration > maxHoldDuration {
 			rm.logger.WithFields(logrus.Fields{
 				"trade_id":      trade.ID,
@@ -168,7 +168,7 @@ func (rm *RiskManager) CheckOpenTrades(ctx context.Context) error {
 				rm.logger.WithError(err).Error("Failed to publish close signal")
 			}
 
-			rm.logRiskEvent(ctx, trade.StrategyID, "MAX_HOLD_TIME", 
+			rm.logRiskEvent(ctx, trade.StrategyID, "MAX_HOLD_TIME",
 				fmt.Sprintf("Trade held for %s", holdDuration), "Closing trade")
 		}
 	}
@@ -287,7 +287,7 @@ func (rm *RiskManager) checkDailyLossLimit(ctx context.Context, strategyID uuid.
 		FROM trades
 		WHERE strategy_id = $1 AND entry_time >= $2
 	`, strategyID, startOfDay).Scan(&dailyPnL)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to get daily P&L: %w", err)
 	}
@@ -297,7 +297,7 @@ func (rm *RiskManager) checkDailyLossLimit(ctx context.Context, strategyID uuid.
 	err = rm.db.QueryRowContext(ctx, `
 		SELECT COALESCE(SUM(total), 0) FROM balances
 	`).Scan(&portfolioValue)
-	
+
 	if err != nil {
 		portfolioValue = decimal.NewFromFloat(10000) // Default fallback
 	}
@@ -309,7 +309,7 @@ func (rm *RiskManager) checkDailyLossLimit(ctx context.Context, strategyID uuid.
 	if dailyPnL.Valid && dailyPnL.Decimal.LessThan(lossLimit.Neg()) {
 		// Auto-enable kill switch
 		rm.EnableKillSwitch(ctx, fmt.Sprintf("Daily loss limit exceeded: %.2f", dailyPnL.Decimal.InexactFloat64()))
-		return fmt.Errorf("daily loss limit exceeded: %.2f (limit: %.2f)", 
+		return fmt.Errorf("daily loss limit exceeded: %.2f (limit: %.2f)",
 			dailyPnL.Decimal.InexactFloat64(), lossLimit.InexactFloat64())
 	}
 
@@ -321,13 +321,13 @@ func (rm *RiskManager) checkMaxOpenPositions(ctx context.Context, strategyID uui
 	err := rm.db.QueryRowContext(ctx, `
 		SELECT COUNT(*) FROM trades WHERE strategy_id = $1 AND exit_time IS NULL
 	`, strategyID).Scan(&openPositions)
-	
+
 	if err != nil {
 		return fmt.Errorf("failed to get open positions: %w", err)
 	}
 
 	if openPositions >= rm.config.MaxOpenPositions {
-		return fmt.Errorf("max open positions reached: %d (limit: %d)", 
+		return fmt.Errorf("max open positions reached: %d (limit: %d)",
 			openPositions, rm.config.MaxOpenPositions)
 	}
 
@@ -348,7 +348,7 @@ func (rm *RiskManager) logRiskEvent(ctx context.Context, strategyID uuid.UUID, e
 		INSERT INTO risk_events (strategy_id, event_type, description, action_taken, metadata)
 		VALUES ($1, $2, $3, $4, $5)
 	`, strategyIDPtr, eventType, description, actionTaken, metadataJSON)
-	
+
 	if err != nil {
 		rm.logger.WithError(err).Error("Failed to log risk event")
 	}
@@ -371,4 +371,3 @@ func oppositeOrderSide(tradeSide models.TradeSide) string {
 	}
 	return string(models.OrderSideBuy)
 }
-

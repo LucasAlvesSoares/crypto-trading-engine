@@ -15,14 +15,14 @@ import (
 
 // MarketDataService handles market data ingestion and storage
 type MarketDataService struct {
-	db            *sql.DB
-	exchange      exchange.Exchange
-	nats          *events.NATSClient
-	logger        *logrus.Entry
-	symbols       []string
-	priceCache    map[string]*PriceCacheEntry
-	priceCacheMu  sync.RWMutex
-	candleBuffer  map[string]*CandleBuffer
+	db             *sql.DB
+	exchange       exchange.Exchange
+	nats           *events.NATSClient
+	logger         *logrus.Entry
+	symbols        []string
+	priceCache     map[string]*PriceCacheEntry
+	priceCacheMu   sync.RWMutex
+	candleBuffer   map[string]*CandleBuffer
 	candleBufferMu sync.Mutex
 }
 
@@ -99,11 +99,11 @@ func (mds *MarketDataService) handlePriceUpdate(ctx context.Context, update *exc
 
 	// Publish price update event
 	priceEvent := &events.PriceUpdateEvent{
-		Exchange:  update.Exchange,
-		Symbol:    update.Symbol,
-		Price:     update.Price.InexactFloat64(),
-		Volume:    update.Volume.InexactFloat64(),
-		Time:      update.Timestamp,
+		Exchange: update.Exchange,
+		Symbol:   update.Symbol,
+		Price:    update.Price.InexactFloat64(),
+		Volume:   update.Volume.InexactFloat64(),
+		Time:     update.Timestamp,
 	}
 
 	if err := mds.nats.Publish(events.EventTypePriceUpdate, priceEvent); err != nil {
@@ -340,4 +340,3 @@ func (mds *MarketDataService) CleanupOldData(ctx context.Context, retentionDays 
 
 	return nil
 }
-

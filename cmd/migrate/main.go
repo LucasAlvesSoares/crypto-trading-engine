@@ -16,7 +16,7 @@ import (
 
 func main() {
 	// Parse command line flags
-	direction := flag.String("direction", "up", "Migration direction: up or down")
+	flag.String("direction", "up", "Migration direction: up or down")
 	steps := flag.Int("steps", 0, "Number of migrations to apply (0 = all)")
 	flag.Parse()
 

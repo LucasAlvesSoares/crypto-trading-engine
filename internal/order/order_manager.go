@@ -160,7 +160,7 @@ func (om *OrderManager) executeOrder(ctx context.Context, orderID uuid.UUID, sig
 
 	if err != nil {
 		om.logger.WithError(err).Error("Failed to get order details")
-		om.updateOrderStatus(ctx, orderID, models.OrderStatusFailed, "", decimal.Zero, decimal.Zero, decimal.Zero)
+		om.updateOrderStatus(ctx, orderID, models.OrderStatusFailed, "", decimal.Zero, nil, nil)
 		return
 	}
 
@@ -186,7 +186,7 @@ func (om *OrderManager) executeOrder(ctx context.Context, orderID uuid.UUID, sig
 	resp, err := om.exchange.PlaceOrder(ctx, req)
 	if err != nil {
 		om.logger.WithError(err).WithField("order_id", orderID).Error("Failed to place order on exchange")
-		om.updateOrderStatus(ctx, orderID, models.OrderStatusFailed, "", decimal.Zero, decimal.Zero, decimal.Zero)
+		om.updateOrderStatus(ctx, orderID, models.OrderStatusFailed, "", decimal.Zero, nil, nil)
 
 		// Publish failed event
 		om.publishOrderEvent(events.EventTypeOrderFailed, orderID, order.ClientOrderID, "", signal)
@@ -466,7 +466,7 @@ func (om *OrderManager) closeTrade(
 
 func (om *OrderManager) generateClientOrderID(signal *events.TradeSignalEvent) string {
 	// Create deterministic ID from signal properties
-	data := fmt.Sprintf("%s-%s-%s-%f-%d",
+	data := fmt.Sprintf("%s-%s-%s-%f-%f",
 		signal.StrategyID,
 		signal.Symbol,
 		signal.Side,

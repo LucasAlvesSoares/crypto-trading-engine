@@ -14,23 +14,23 @@ import (
 
 // PaperExchange simulates an exchange for paper trading
 type PaperExchange struct {
-	name              string
-	balances          map[string]*Balance
-	orders            map[string]*OrderResponse
-	currentPrices     map[string]decimal.Decimal
-	slippagePercent   decimal.Decimal
-	takerFeePercent   decimal.Decimal
-	makerFeePercent   decimal.Decimal
-	mu                sync.RWMutex
-	logger            *logrus.Logger
-	priceCallbacks    []func(*PriceUpdate)
-	priceCallbacksMu  sync.RWMutex
+	name             string
+	balances         map[string]*Balance
+	orders           map[string]*OrderResponse
+	currentPrices    map[string]decimal.Decimal
+	slippagePercent  decimal.Decimal
+	takerFeePercent  decimal.Decimal
+	makerFeePercent  decimal.Decimal
+	mu               sync.RWMutex
+	logger           *logrus.Logger
+	priceCallbacks   []func(*PriceUpdate)
+	priceCallbacksMu sync.RWMutex
 }
 
 // NewPaperExchange creates a new paper trading exchange
 func NewPaperExchange(name string, initialBalance decimal.Decimal, logger *logrus.Logger) *PaperExchange {
 	return &PaperExchange{
-		name:     name,
+		name: name,
 		balances: map[string]*Balance{
 			"USD": {
 				Currency:  "USD",
@@ -70,7 +70,7 @@ func (pe *PaperExchange) PlaceOrder(ctx context.Context, req *OrderRequest) (*Or
 
 	// Calculate required funds
 	totalCost := executionPrice.Mul(req.Quantity)
-	
+
 	// Calculate fees (taker fee for market orders, maker fee for limit orders)
 	feePercent := pe.takerFeePercent
 	if req.Type == models.OrderTypeLimit {
@@ -82,7 +82,7 @@ func (pe *PaperExchange) PlaceOrder(ctx context.Context, req *OrderRequest) (*Or
 	if req.Side == models.OrderSideBuy {
 		totalRequired := totalCost.Add(fees)
 		if pe.balances["USD"].Available.LessThan(totalRequired) {
-			return nil, fmt.Errorf("insufficient balance: need %s, have %s", 
+			return nil, fmt.Errorf("insufficient balance: need %s, have %s",
 				totalRequired.String(), pe.balances["USD"].Available.String())
 		}
 
@@ -145,12 +145,12 @@ func (pe *PaperExchange) PlaceOrder(ctx context.Context, req *OrderRequest) (*Or
 	pe.orders[orderID] = order
 
 	pe.logger.WithFields(logrus.Fields{
-		"order_id":       orderID,
-		"symbol":         req.Symbol,
-		"side":           req.Side,
-		"quantity":       req.Quantity.String(),
+		"order_id":        orderID,
+		"symbol":          req.Symbol,
+		"side":            req.Side,
+		"quantity":        req.Quantity.String(),
 		"execution_price": executionPrice.String(),
-		"fees":           fees.String(),
+		"fees":            fees.String(),
 	}).Info("Paper order executed")
 
 	return order, nil
@@ -291,4 +291,3 @@ func (pe *PaperExchange) getBaseCurrency(symbol string) string {
 	}
 	return symbol
 }
-
