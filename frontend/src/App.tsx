@@ -11,11 +11,11 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center justify-between">
             <h1 className="text-3xl font-bold text-gray-900">
-              📈 Crypto Trading Bot
+              Crypto Trading Bot
             </h1>
             <div className="flex items-center gap-4">
               <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full">
-                📄 PAPER TRADING
+                PAPER TRADING
               </span>
               <a
                 href="https://github.com"
@@ -70,7 +70,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="text-center text-sm text-gray-500">
             <p className="mb-2">
-              ⚠️ <strong>Paper Trading Mode</strong> - No real money at risk
+              <strong>Paper Trading Mode</strong> - No real money at risk
             </p>
             <p>
               Always test thoroughly before considering live trading. Use at your own risk.

@@ -46,7 +46,7 @@ export function StrategyControl() {
               : 'bg-gray-100 text-gray-800'
           }`}
         >
-          {strategy.is_active ? '▶ ACTIVE' : '⏸ INACTIVE'}
+          {strategy.is_active ? 'ACTIVE' : 'INACTIVE'}
         </div>
       </div>
 
@@ -86,13 +86,13 @@ export function StrategyControl() {
         {actionLoading
           ? 'Processing...'
           : strategy.is_active
-          ? '⏸ Disable Strategy'
-          : '▶ Enable Strategy'}
+          ? 'Disable Strategy'
+          : 'Enable Strategy'}
       </button>
 
       {!strategy.is_active && (
         <div className="mt-3 text-sm text-yellow-700 bg-yellow-50 border border-yellow-200 rounded p-3">
-          ⚠️ Strategy is currently disabled. No trades will be placed.
+          Strategy is currently disabled. No trades will be placed.
         </div>
       )}
     </div>

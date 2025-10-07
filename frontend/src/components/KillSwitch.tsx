@@ -64,7 +64,7 @@ export function KillSwitch() {
               : 'bg-green-100 text-green-800'
           }`}
         >
-          {status.enabled ? '🛑 ENABLED' : '✅ Disabled'}
+          {status.enabled ? 'ENABLED' : 'Disabled'}
         </div>
       </div>
 
@@ -107,7 +107,7 @@ export function KillSwitch() {
                 disabled={actionLoading}
                 className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {actionLoading ? 'Enabling...' : '🛑 Confirm Enable'}
+                {actionLoading ? 'Enabling...' : 'Confirm Enable'}
               </button>
               <button
                 onClick={() => {
@@ -125,7 +125,7 @@ export function KillSwitch() {
             onClick={() => setShowConfirm(true)}
             className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded text-lg"
           >
-            🛑 ENABLE KILL SWITCH
+            ENABLE KILL SWITCH
           </button>
         )
       ) : (
@@ -134,7 +134,7 @@ export function KillSwitch() {
           disabled={actionLoading}
           className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded text-lg disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {actionLoading ? 'Disabling...' : '✅ Disable Kill Switch'}
+          {actionLoading ? 'Disabling...' : 'Disable Kill Switch'}
         </button>
       )}
     </div>
