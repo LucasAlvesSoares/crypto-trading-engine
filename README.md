@@ -81,19 +81,28 @@ docker-compose up -d
 
 ### 2. Run Database Migrations
 ```bash
-make migrate-up
+cd backend
+go run ./cmd/migrate up
 ```
 
 ### 3. Start Backend Services
+In separate terminals:
 ```bash
-make run-services
+# Terminal 1 - Market Data Service
+cd backend && go run ./cmd/market-data
+
+# Terminal 2 - Trading Bot
+cd backend && go run ./cmd/trading-bot
+
+# Terminal 3 - API Gateway
+cd backend && go run ./cmd/api-gateway
 ```
 
-### 4. Start Frontend
+### 4. Start Frontend Dashboard
 ```bash
 cd frontend
 npm install
-npm start
+npm run dev
 ```
 
 ### 5. Access Dashboard
@@ -131,24 +140,36 @@ TRADING_MODE=paper  # paper or live
 
 ```
 .
-├── cmd/
-│   ├── api-gateway/       # HTTP API and WebSocket server
-│   ├── market-data/       # Price data ingestion
-│   ├── strategy-engine/   # Trading strategy execution
-│   ├── risk-manager/      # Risk validation service
-│   ├── order-manager/     # Order execution service
-│   └── backtest/          # Backtesting CLI tool
-├── internal/
-│   ├── exchange/          # Exchange connector implementations
-│   ├── strategy/          # Trading strategies
-│   ├── risk/              # Risk management logic
-│   ├── models/            # Domain models
-│   ├── database/          # Database layer (sqlc generated)
-│   └── events/            # NATS event definitions
-├── frontend/              # React dashboard
-├── migrations/            # Database migrations
+├── backend/               # Go backend services
+│   ├── cmd/
+│   │   ├── api-gateway/   # HTTP API server
+│   │   ├── market-data/   # Price data ingestion
+│   │   ├── trading-bot/   # Main trading bot service
+│   │   └── migrate/       # Database migration tool
+│   ├── internal/
+│   │   ├── exchange/      # Exchange connector implementations
+│   │   ├── strategy/      # Trading strategies
+│   │   ├── risk/          # Risk management logic
+│   │   ├── order/         # Order management
+│   │   ├── marketdata/    # Market data service
+│   │   ├── models/        # Domain models
+│   │   ├── config/        # Configuration
+│   │   ├── events/        # NATS event system
+│   │   └── logger/        # Logging utilities
+│   ├── migrations/        # Database migrations
+│   ├── go.mod            # Go dependencies
+│   └── Makefile          # Backend build commands
+├── frontend/              # React TypeScript dashboard
+│   ├── src/
+│   │   ├── components/    # React components
+│   │   ├── api/          # API client
+│   │   ├── hooks/        # Custom React hooks
+│   │   └── types/        # TypeScript types
+│   ├── package.json      # Frontend dependencies
+│   └── vite.config.ts    # Vite configuration
 ├── docker-compose.yml     # Infrastructure setup
-└── Makefile              # Build and run commands
+├── scripts/               # Utility scripts
+└── README.md             # This file
 ```
 
 ## Development

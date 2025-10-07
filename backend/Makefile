@@ -1,4 +1,4 @@
-.PHONY: help build run test clean docker-up docker-down migrate-up migrate-down sqlc-generate lint
+.PHONY: help build run test clean migrate-up migrate-down sqlc-generate lint
 
 # Default target
 help:
@@ -8,8 +8,6 @@ help:
 	@echo "  test           - Run tests"
 	@echo "  lint           - Run linter"
 	@echo "  clean          - Clean build artifacts"
-	@echo "  docker-up      - Start infrastructure (PostgreSQL, NATS)"
-	@echo "  docker-down    - Stop infrastructure"
 	@echo "  migrate-up     - Run database migrations"
 	@echo "  migrate-down   - Rollback database migrations"
 	@echo "  sqlc-generate  - Generate sqlc database code"
@@ -21,10 +19,8 @@ build:
 	@mkdir -p bin
 	@go build -o bin/api-gateway ./cmd/api-gateway
 	@go build -o bin/market-data ./cmd/market-data
-	@go build -o bin/strategy-engine ./cmd/strategy-engine
-	@go build -o bin/risk-manager ./cmd/risk-manager
-	@go build -o bin/order-manager ./cmd/order-manager
-	@go build -o bin/backtest ./cmd/backtest
+	@go build -o bin/trading-bot ./cmd/trading-bot
+	@go build -o bin/migrate ./cmd/migrate
 	@echo "Build complete!"
 
 # Run all backend services (in development mode)
@@ -32,9 +28,7 @@ run-services:
 	@echo "Starting services..."
 	@go run ./cmd/api-gateway & \
 	go run ./cmd/market-data & \
-	go run ./cmd/strategy-engine & \
-	go run ./cmd/risk-manager & \
-	go run ./cmd/order-manager & \
+	go run ./cmd/trading-bot & \
 	wait
 
 # Run tests
@@ -55,20 +49,6 @@ clean:
 	@rm -rf bin/
 	@rm -f coverage.out coverage.html
 	@echo "Clean complete!"
-
-# Start infrastructure
-docker-up:
-	@echo "Starting infrastructure..."
-	@docker-compose up -d
-	@echo "Waiting for services to be healthy..."
-	@sleep 5
-	@echo "Infrastructure ready!"
-
-# Stop infrastructure
-docker-down:
-	@echo "Stopping infrastructure..."
-	@docker-compose down
-	@echo "Infrastructure stopped!"
 
 # Run database migrations up
 migrate-up:
@@ -95,11 +75,4 @@ install-tools:
 	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 	@go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
 	@echo "Tools installed!"
-
-# Initialize project (first time setup)
-init: install-tools docker-up
-	@echo "Waiting for database..."
-	@sleep 5
-	@$(MAKE) migrate-up
-	@echo "Project initialized!"
 
