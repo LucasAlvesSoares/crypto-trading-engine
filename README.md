@@ -1,6 +1,6 @@
 # Crypto Trading Bot
 
-A production-ready cryptocurrency trading bot built with Go and React, featuring paper trading, backtesting, and comprehensive risk management.
+A production-ready cryptocurrency trading bot built with Go and React, featuring paper trading and comprehensive risk management.
 
 ## Features
 
@@ -8,10 +8,9 @@ A production-ready cryptocurrency trading bot built with Go and React, featuring
 - **Single Exchange Integration**: Coinbase Advanced Trade API with comprehensive error handling
 - **Mean Reversion Strategy**: RSI + Bollinger Bands + SMA indicators
 - **Risk Management**: Kill switch, position limits, daily loss limits, stop-loss
-- **Backtesting Engine**: Historical simulation with realistic slippage and fees
-- **Real-Time Dashboard**: React + TypeScript UI with live charts and monitoring
+- **Real-Time Dashboard**: React + TypeScript UI with live monitoring
 - **Event-Driven Architecture**: NATS message bus for decoupled components
-- **Production-Ready**: Observability, fault tolerance, comprehensive testing
+- **Production-Ready**: Structured logging, fault tolerance, health checks
 
 ## Architecture
 
@@ -174,24 +173,19 @@ TRADING_MODE=paper  # paper or live
 
 ## Development
 
-### Run Tests
-```bash
-make test
-```
-
-### Run Linter
-```bash
-make lint
-```
-
 ### Generate Database Code
 ```bash
-make sqlc-generate
+cd backend
+sqlc generate
 ```
 
 ### Build All Services
 ```bash
-make build
+cd backend
+go build -o ../bin/migrate ./cmd/migrate
+go build -o ../bin/market-data ./cmd/market-data
+go build -o ../bin/trading-bot ./cmd/trading-bot
+go build -o ../bin/api-gateway ./cmd/api-gateway
 ```
 
 ## Safety Features
@@ -215,24 +209,10 @@ make build
 - No real money at risk
 - Always start here before going live
 
-## Backtesting
-
-Run historical backtests:
-
-```bash
-./bin/backtest \
-  --strategy mean-reversion \
-  --symbol BTC-USD \
-  --start 2024-01-01 \
-  --end 2024-12-31 \
-  --initial-balance 10000
-```
-
 ## Monitoring
 
 - **Logs**: Structured JSON logs to stdout
 - **Health Checks**: `/health` endpoint on each service
-- **Metrics**: Prometheus metrics at `/metrics`
 - **Dashboard**: Real-time monitoring at http://localhost:3000
 
 ## Production Deployment
